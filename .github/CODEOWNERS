@@ -1,0 +1,10 @@
+# 팀 프로젝트 시 리뷰어 자동 지정
+# 실습 전 팀원 GitHub ID로 교체
+
+# C 코드 변경 시 정적 분석 담당자 리뷰 필수
+src/*.c @static-analysis-reviewer
+src/*.h @static-analysis-reviewer
+
+# 테스트 케이스 변경 시 테스트 설계자 리뷰 필수
+test/TC_template* @test-designer
+test/test_slas.c @test-designer

@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SLAS 소프트웨어 검증 UI</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --panel: #fff;
+      --ink: #16202a;
+      --muted: #667085;
+      --line: #d8dee8;
+      --dark: #172033;
+      --blue: #2458a6;
+      --green: #16835f;
+      --amber: #b76e00;
+      --red: #b42318;
+      --gray: #64748b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, "Malgun Gothic", sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    header {
+      background: var(--dark);
+      color: #fff;
+      padding: 18px 24px;
+      border-bottom: 4px solid #3d8bfd;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #d6dfef;
+    }
+
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: minmax(400px, 500px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    section {
+      min-width: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    h2, h3 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      padding: 13px 16px;
+      background: #eef2f8;
+      border-bottom: 1px solid var(--line);
+      font-size: 16px;
+    }
+
+    h3 {
+      padding: 10px 12px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 6px 6px 0 0;
+      font-size: 14px;
+    }
+
+    .body {
+      padding: 14px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .group {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    .grid {
+      padding: 12px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 11px;
+    }
+
+    label {
+      min-width: 0;
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .note {
+      color: #7a8699;
+      font-size: 12px;
+      font-weight: 500;
+      overflow-wrap: anywhere;
+    }
+
+    .group-note {
+      margin: -6px 12px 0;
+      color: #7a8699;
+      font-size: 12px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    select, input {
+      width: 100%;
+      min-width: 0;
+      min-height: 36px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 6px 8px;
+      color: var(--ink);
+      background: #fff;
+      font: inherit;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 1px solid transparent;
+      border-radius: 6px;
+      min-height: 36px;
+      padding: 8px 12px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--blue);
+      cursor: pointer;
+    }
+
+    button.secondary {
+      color: var(--ink);
+      background: #fff;
+      border-color: #cbd5e1;
+    }
+
+.right {
+      display: grid;
+      gap: 18px;
+    }
+
+    .cluster-wrap {
+      padding: 18px;
+      background: linear-gradient(180deg, #293447, #182132);
+      color: #f8fafc;
+    }
+
+    .cluster {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .cluster-box {
+      min-height: 210px;
+      border: 2px solid #556173;
+      border-radius: 8px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      background: #101828;
+      box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.35);
+      padding: 12px;
+    }
+
+    .cluster-title {
+      color: #cbd5e1;
+      font-size: 13px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .big {
+      font-size: 54px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .unit {
+      color: #b9c3d1;
+      margin-top: 6px;
+    }
+
+    .speed-sign {
+      width: 136px;
+      height: 136px;
+      border-radius: 50%;
+      border: 11px solid #e32d2d;
+      display: grid;
+      place-items: center;
+      color: #111827;
+      background: #fff;
+      font-size: 40px;
+      font-weight: 900;
+    }
+
+    .speed-sign.unknown {
+      border-color: #8b95a7;
+      color: #475467;
+      font-size: 32px;
+    }
+
+    .assist-card {
+      min-height: 210px;
+      border: 2px solid #556173;
+      border-radius: 8px;
+      background: #101828;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .assist-state {
+      width: 142px;
+      min-height: 70px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 23px;
+      font-weight: 900;
+      color: #fff;
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      background: var(--gray);
+    }
+
+    .assist-state.off { background: #3f4754; }
+    .assist-state.gray { background: var(--gray); }
+    .assist-state.green { background: var(--green); }
+    .assist-state.amber { background: #d97706; }
+    .assist-state.red { background: var(--red); }
+
+    .lamp-row {
+      display: grid;
+      gap: 8px;
+      width: 100%;
+      max-width: 210px;
+    }
+
+    .lamp {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #cbd5e1;
+      min-height: 28px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #4b5565;
+      border: 1px solid #6b7280;
+    }
+
+    .lamp.on.red .dot {
+      background: var(--red);
+      border-color: #ffb4a8;
+      box-shadow: 0 0 12px rgba(255, 100, 90, 0.9);
+    }
+
+    .lamp.on.amber .dot {
+      background: #f59e0b;
+      border-color: #fed7aa;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.9);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      width: 40%;
+      background: #f1f5f9;
+      color: #344054;
+    }
+
+    .result-section th {
+      width: auto;
+      background: #dbe7f6;
+      color: #12294a;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .result-section.reference th {
+      background: #f8fafc;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      background: #e4eaf2;
+      color: #344054;
+    }
+
+    .badge.green { background: #dcfae6; color: var(--green); }
+    .badge.amber { background: #fef0c7; color: var(--amber); }
+    .badge.red { background: #fee4e2; color: var(--red); }
+
+    @media (max-width: 960px) {
+      main { grid-template-columns: 1fr; }
+      .cluster { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SLAS 소프트웨어 검증 UI</h1>
+    <p>기본 제한속도 정보와 SLAS 보조 표시, 경고 및 안내 출력을 구분해서 확인한다.</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>시험 조건 입력</h2>
+      <div class="body">
+        <div class="group">
+          <h3>SLAS 모드 설정</h3>
+          <div class="grid">
+            <label>SLAS 모드
+              <span class="note">HMI 설정 신호 `SLAS_Mode`</span>
+              <select id="mode">
+                <option>OFF</option>
+                <option selected>WARNING</option>
+                <option>ASSIST</option>
+              </select>
+            </label>
+            <label>속도 보정값 Offset
+              <span class="note">설정 신호 `SLAS_OffsetSet_kph`</span>
+              <select id="offsetKph">
+                <option>-11</option>
+                <option>-10</option>
+                <option>-5</option>
+                <option selected>0</option>
+                <option>5</option>
+                <option>10</option>
+                <option>11</option>
+              </select>
+            </label>
+            <label>현재 ACC/MSLA 설정속도
+              <span class="note">ACC/MSLA 설정 신호 `ACC_SetSpd_kph`</span>
+              <input id="setSpeedKph" type="number" value="80" min="0" max="130">
+            </label>
+          </div>
+        </div>
+
+        <div class="group">
+          <h3>차량·속도 정보</h3>
+          <div class="grid">
+            <label>차량 속도
+              <span class="note">차량 속도 신호 `VehSpd_kph`</span>
+              <input id="vehicleSpeedKph" type="number" value="70" min="0" max="250">
+            </label>
+            <label>카메라 인식 제한속도
+              <span class="note">표지판 인식 신호 `TSR_SpdLimit_kph`</span>
+              <input id="cameraSpeedLimitKph" type="number" value="80" min="0" max="130">
+            </label>
+            <label>내비게이션 제한속도
+              <span class="note">내비 제한속도 신호 `NAV_SpdLimit_kph`</span>
+              <input id="navSpeedLimitKph" type="number" value="80" min="0" max="130">
+            </label>
+          </div>
+        </div>
+
+        <div class="group">
+          <h3>카메라 상태</h3>
+          <div class="grid">
+            <label>전방 카메라 상태
+              <span class="note">카메라 상태 신호 `FwdCam_Status`</span>
+              <select id="cameraStatus">
+                <option selected>NORMAL</option>
+                <option>BLOCKED</option>
+                <option>LOW_CONFIDENCE</option>
+              </select>
+            </label>
+            <label>카메라 초기화 중
+              <span class="note">카메라 초기화 신호 `FwdCam_InitActv`</span>
+              <select id="cameraInitializing">
+                <option selected>false</option>
+                <option>true</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="group">
+          <h3>도로·표지판 정보</h3>
+          <div class="grid">
+            <label>표지판 타입
+              <span class="note">표지판 타입 신호 `TSR_SignType`</span>
+              <select id="signType">
+                <option selected>SPEED_LIMIT</option>
+                <option>MIN_SPEED</option>
+                <option>UNKNOWN</option>
+              </select>
+            </label>
+            <label>도로 컨텍스트
+              <span class="note">시나리오/내비 신호 `RoadContext`</span>
+              <select id="roadContext">
+                <option selected>MAIN_ROAD</option>
+                <option>EXIT_ROAD</option>
+                <option>TUNNEL</option>
+                <option>NEW_ROAD</option>
+              </select>
+            </label>
+            <label>복수 표지판 감지
+              <span class="note">표지판 인식 신호 `TSR_MultipleSigns`</span>
+              <select id="multipleSigns">
+                <option selected>false</option>
+                <option>true</option>
+              </select>
+            </label>
+            <label>출구도로 제한속도
+              <span class="note">출구도로 표지판 신호 `TSR_ExitSpdLimit_kph`</span>
+              <input id="exitRoadSpeedLimitKph" type="number" value="0" min="0" max="130">
+            </label>
+          </div>
+        </div>
+
+        <div class="group">
+          <h3>시스템 상태</h3>
+          <div class="grid">
+            <label>시동 후 경과 시간
+              <span class="note">테스트 환경 변수 `IgnElapsed_s`</span>
+              <input id="ignitionElapsedSec" type="number" value="60" min="0" max="3600">
+            </label>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="runBtn" type="button">현재 Step 실행</button>
+          <button id="resetBtn" class="secondary" type="button">전체 초기화</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="right">
+      <section>
+        <h2>클러스터 관찰 출력</h2>
+        <div class="cluster-wrap">
+          <div class="cluster">
+            <div class="cluster-box">
+              <div class="cluster-title">현재 차량 속도 표시</div>
+              <div id="speedDial" class="big">70</div>
+              <div class="unit">km/h</div>
+            </div>
+            <div class="cluster-box">
+              <div class="cluster-title">기본 제한속도 정보</div>
+              <div id="speedSign" class="speed-sign">80</div>
+            </div>
+            <div class="assist-card">
+              <div class="cluster-title">SLAS 보조 표시 색상</div>
+              <div id="assistState" class="assist-state green">GREEN</div>
+              <div class="lamp-row">
+                <div id="overspeedLamp" class="lamp red"><span class="dot"></span><span>과속 경고</span></div>
+                <div id="guideLamp" class="lamp amber"><span class="dot"></span><span>설정속도 변경 안내</span></div>
+                <div id="limitedLamp" class="lamp amber"><span class="dot"></span><span>기능 제한/오류</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>실제 출력 결과 (Actual Result)</h2>
+        <div class="body">
+          <table>
+            <tbody>
+              <tr class="result-section"><th colspan="2">판정 출력 (Actual Result 기록 대상)</th></tr>
+              <tr><th>기본 제한속도 정보 (`baseLimitDisplay`)</th><td id="outBaseLimit"></td></tr>
+              <tr><th>SLAS 보조 표시 색상 (`assistDisplayColor`)</th><td id="outAssistColor"></td></tr>
+              <tr><th>과속 경고 (`overspeedWarning`)</th><td id="outOverspeed"></td></tr>
+              <tr><th>설정속도 변경 안내 (`setSpeedChangeGuide`)</th><td id="outGuide"></td></tr>
+              <tr><th>기능 제한 메시지 (`limitationMessage`)</th><td id="outMessage"></td></tr>
+              <tr><th>제한속도 출처 (`sourceUsed`)</th><td id="outSource"></td></tr>
+              <tr class="result-section reference"><th colspan="2">참고 / 내부 상태</th></tr>
+              <tr><th>시스템 상태 (`systemState`)</th><td id="outSystemState"></td></tr>
+              <tr><th>적용 제한속도 (`appliedLimitKph`)</th><td id="outAppliedLimit"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const defaultValues = {
+      mode: "WARNING",
+      offsetKph: 0,
+      setSpeedKph: 80,
+      vehicleSpeedKph: 70,
+      cameraStatus: "NORMAL",
+      cameraSpeedLimitKph: 80,
+      navSpeedLimitKph: 80,
+      signType: "SPEED_LIMIT",
+      roadContext: "MAIN_ROAD",
+      multipleSigns: "false",
+      exitRoadSpeedLimitKph: 0,
+      cameraInitializing: "false",
+      ignitionElapsedSec: 60
+    };
+
+    let previousDisplayedLimit = 0;
+
+    function num(id) { return Number(document.getElementById(id).value); }
+    function str(id) { return document.getElementById(id).value; }
+    function boolVal(id) { return document.getElementById(id).value === "true"; }
+
+    function isValidSpeedLimit(value) {
+      return value === 0 || (value >= 30 && value <= 130);
+    }
+
+    function validate(input) {
+      if (input.vehicleSpeedKph < 0 || input.vehicleSpeedKph > 250) return false;
+      if (input.offsetKph < -10 || input.offsetKph > 10) return false;
+      if (input.ignitionElapsedSec < 0) return false;
+      return [
+        input.cameraSpeedLimitKph,
+        input.navSpeedLimitKph,
+        input.exitRoadSpeedLimitKph,
+        input.setSpeedKph
+      ].every(isValidSpeedLimit);
+    }
+
+    function selectSpeedLimit(input) {
+      if (input.cameraStatus === "BLOCKED") {
+        return { valid: false, appliedLimitKph: 0, sourceUsed: "NONE" };
+      }
+
+      if (input.multipleSigns && input.exitRoadSpeedLimitKph !== 0 && isValidSpeedLimit(input.exitRoadSpeedLimitKph)) {
+        return { valid: true, appliedLimitKph: input.exitRoadSpeedLimitKph, sourceUsed: "CAMERA" };
+      }
+
+      if (input.cameraStatus === "NORMAL" && input.signType === "SPEED_LIMIT" && input.cameraSpeedLimitKph !== 0 && isValidSpeedLimit(input.cameraSpeedLimitKph)) {
+        return { valid: true, appliedLimitKph: input.cameraSpeedLimitKph, sourceUsed: "CAMERA" };
+      }
+
+      if (input.cameraStatus === "LOW_CONFIDENCE" && input.navSpeedLimitKph !== 0 && isValidSpeedLimit(input.navSpeedLimitKph)) {
+        return { valid: true, appliedLimitKph: input.navSpeedLimitKph, sourceUsed: "CAMERA" };
+      }
+
+      if (input.signType === "UNKNOWN" && input.navSpeedLimitKph !== 0 && isValidSpeedLimit(input.navSpeedLimitKph)) {
+        return { valid: true, appliedLimitKph: input.navSpeedLimitKph, sourceUsed: "NAVIGATION" };
+      }
+
+      return { valid: false, appliedLimitKph: 0, sourceUsed: "NONE" };
+    }
+
+    function evaluate(input) {
+      const result = {
+        systemState: "NORMAL",
+        baseLimitDisplay: "---",
+        assistDisplayColor: "GRAY",
+        appliedLimitKph: 0,
+        overspeedWarning: false,
+        setSpeedChangeGuide: "NONE",
+        limitationMessage: "NONE",
+        sourceUsed: "NONE"
+      };
+
+      if (!validate(input)) {
+        result.systemState = "INVALID_INPUT";
+        result.limitationMessage = "INVALID_INPUT";
+        return result;
+      }
+
+      if (input.cameraInitializing || input.ignitionElapsedSec < 15) {
+        result.systemState = "INITIALIZING";
+        result.limitationMessage = "INITIALIZING";
+        return result;
+      }
+
+      if (input.cameraStatus === "BLOCKED") {
+        result.systemState = "LIMITED";
+        result.limitationMessage = "CAMERA_OBSCURED";
+        if (previousDisplayedLimit !== 0) {
+          result.baseLimitDisplay = String(previousDisplayedLimit);
+          result.appliedLimitKph = previousDisplayedLimit;
+          result.assistDisplayColor = "AMBER";
+        }
+        if (input.mode === "ASSIST" && result.appliedLimitKph >= 30 && input.setSpeedKph !== result.appliedLimitKph) {
+          result.setSpeedChangeGuide = input.setSpeedKph < result.appliedLimitKph ? "UP" : "DOWN";
+        }
+        return result;
+      }
+
+      const selection = selectSpeedLimit(input);
+      if (selection.valid) {
+        result.appliedLimitKph = selection.appliedLimitKph;
+        result.baseLimitDisplay = String(selection.appliedLimitKph);
+        result.sourceUsed = selection.sourceUsed;
+      }
+
+      if (input.mode === "OFF") {
+        result.systemState = "OFF";
+        result.assistDisplayColor = "OFF";
+        if (selection.valid && input.vehicleSpeedKph > selection.appliedLimitKph + input.offsetKph) {
+          result.overspeedWarning = true;
+          result.assistDisplayColor = "RED";
+        }
+        return result;
+      }
+
+      if (!selection.valid) {
+        return result;
+      }
+
+      const threshold = selection.appliedLimitKph + input.offsetKph;
+      result.overspeedWarning = input.vehicleSpeedKph > threshold;
+
+      if (result.overspeedWarning) {
+        result.assistDisplayColor = "RED";
+      } else if (input.vehicleSpeedKph > threshold * 0.9) {
+        result.assistDisplayColor = "AMBER";
+      } else {
+        result.assistDisplayColor = "GREEN";
+      }
+
+      if (input.mode === "ASSIST" && selection.appliedLimitKph >= 30 && input.setSpeedKph !== selection.appliedLimitKph) {
+        result.setSpeedChangeGuide = input.setSpeedKph < selection.appliedLimitKph ? "UP" : "DOWN";
+      }
+
+      return result;
+    }
+
+    function readInput() {
+      return {
+        mode: str("mode"),
+        offsetKph: num("offsetKph"),
+        setSpeedKph: num("setSpeedKph"),
+        vehicleSpeedKph: num("vehicleSpeedKph"),
+        cameraStatus: str("cameraStatus"),
+        cameraSpeedLimitKph: num("cameraSpeedLimitKph"),
+        navSpeedLimitKph: num("navSpeedLimitKph"),
+        signType: str("signType"),
+        roadContext: str("roadContext"),
+        multipleSigns: boolVal("multipleSigns"),
+        exitRoadSpeedLimitKph: num("exitRoadSpeedLimitKph"),
+        cameraInitializing: boolVal("cameraInitializing"),
+        ignitionElapsedSec: num("ignitionElapsedSec")
+      };
+    }
+
+    function setBadge(id, value, tone) {
+      document.getElementById(id).innerHTML = `<span class="badge ${tone || ""}">${value}</span>`;
+    }
+
+    function toneForColor(color) {
+      if (color === "GREEN") return "green";
+      if (color === "AMBER") return "amber";
+      if (color === "RED") return "red";
+      return "";
+    }
+
+    function updateCluster(input, result) {
+      document.getElementById("speedDial").textContent = input.vehicleSpeedKph;
+
+      const sign = document.getElementById("speedSign");
+      sign.className = "speed-sign";
+      sign.textContent = result.baseLimitDisplay;
+      if (result.baseLimitDisplay === "---") sign.classList.add("unknown");
+
+      const assist = document.getElementById("assistState");
+      assist.className = `assist-state ${result.assistDisplayColor.toLowerCase()}`;
+      assist.textContent = result.assistDisplayColor;
+
+      document.getElementById("overspeedLamp").classList.toggle("on", result.overspeedWarning);
+      document.getElementById("guideLamp").classList.toggle("on", result.setSpeedChangeGuide !== "NONE");
+      document.getElementById("limitedLamp").classList.toggle("on", result.limitationMessage !== "NONE");
+    }
+
+    function runStep() {
+      const input = readInput();
+      const result = evaluate(input);
+
+      updateCluster(input, result);
+      setBadge("outSystemState", result.systemState, result.systemState === "NORMAL" ? "green" : result.systemState === "OFF" ? "" : "amber");
+      document.getElementById("outBaseLimit").textContent = result.baseLimitDisplay;
+      setBadge("outAssistColor", result.assistDisplayColor, toneForColor(result.assistDisplayColor));
+      document.getElementById("outAppliedLimit").textContent = result.appliedLimitKph === 0 ? "없음" : `${result.appliedLimitKph} km/h`;
+      setBadge("outOverspeed", result.overspeedWarning ? "표시됨" : "표시 안 됨", result.overspeedWarning ? "red" : "green");
+      setBadge("outGuide", result.setSpeedChangeGuide, result.setSpeedChangeGuide === "NONE" ? "" : "amber");
+      setBadge("outMessage", result.limitationMessage, result.limitationMessage === "NONE" ? "" : "amber");
+      document.getElementById("outSource").textContent = result.sourceUsed;
+
+      if (/^[0-9]+$/.test(result.baseLimitDisplay)) {
+        previousDisplayedLimit = Number(result.baseLimitDisplay);
+      }
+    }
+
+    function setDefaults() {
+      Object.entries(defaultValues).forEach(([key, value]) => {
+        document.getElementById(key).value = String(value);
+      });
+      previousDisplayedLimit = 0;
+      runStep();
+      previousDisplayedLimit = 0;
+    }
+
+    document.getElementById("runBtn").addEventListener("click", runStep);
+    document.getElementById("resetBtn").addEventListener("click", setDefaults);
+
+    setDefaults();
+  </script>
+</body>
+</html>

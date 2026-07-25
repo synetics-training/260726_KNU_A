@@ -1,0 +1,84 @@
+name: "Static Analysis (cppcheck + lizard)"
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ["**.c", "**.h"]
+
+jobs:
+  cppcheck:
+    name: cppcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install cppcheck
+        run: sudo apt-get update && sudo apt-get install -y cppcheck
+
+      - name: Run cppcheck (general)
+        run: |
+          cppcheck --enable=all \
+                   --check-level=exhaustive \
+                   --suppress=missingIncludeSystem \
+                   --suppress=unusedFunction \
+                   --error-exitcode=0 \
+                   --xml \
+                   src/slas.c 2> cppcheck-report.xml
+
+      - name: Run cppcheck (MISRA C:2012)
+        run: |
+          cppcheck --addon=misra \
+                   --suppress=missingIncludeSystem \
+                   --error-exitcode=0 \
+                   src/slas.c 2> misra-report.txt || true
+          echo "::group::MISRA Report"
+          cat misra-report.txt
+          echo "::endgroup::"
+
+      - name: Upload cppcheck report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cppcheck-reports
+          path: |
+            cppcheck-report.xml
+            misra-report.txt
+
+  lizard:
+    name: lizard (Code Metrics)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install lizard
+        run: pip install lizard
+
+      - name: Run lizard
+        id: lizard
+        run: |
+          echo "## Code Metrics Report" > lizard-report.md
+          echo '```' >> lizard-report.md
+          lizard -C 10 -L 80 src/slas.c | tee -a lizard-report.md
+          LIZARD_EXIT=$?
+          echo '```' >> lizard-report.md
+          echo "exit_code=$LIZARD_EXIT" >> "$GITHUB_OUTPUT"
+
+      - name: Run duplicate detection
+        run: |
+          echo "" >> lizard-report.md
+          echo "## Duplicate Code Detection" >> lizard-report.md
+          echo '```' >> lizard-report.md
+          lizard -Eduplicate src/slas.c 2>&1 | tee -a lizard-report.md || true
+          echo '```' >> lizard-report.md
+
+      - name: Upload lizard report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lizard-report
+          path: lizard-report.md
+
+      - name: Check metrics threshold
+        if: steps.lizard.outputs.exit_code != '0'
+        run: |
+          echo "::warning::One or more functions exceed complexity thresholds (CCN > 10 or LOC > 80)"

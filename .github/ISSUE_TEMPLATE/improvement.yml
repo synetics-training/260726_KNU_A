@@ -1,0 +1,51 @@
+name: "개선 제안 (Improvement)"
+description: "리팩토링, 메트릭 개선, 코드 품질 향상을 제안합니다."
+title: "[개선] "
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: "개선 유형"
+      options:
+        - "리팩토링 (복잡도 감소)"
+        - "코드 중복 제거"
+        - "주석/문서화 보완"
+        - "MISRA 규칙 준수"
+        - "테스트 커버리지 향상"
+        - "기타"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: "현재 상태"
+      description: "현재 코드의 문제점 또는 개선이 필요한 이유"
+      placeholder: |
+        evaluate() 함수의 CCN=15 (기준: 10 미만)
+        NLOC=61 (기준: 50 이하)
+        LOC=85 (기준: 80 이하)
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: "개선 방안"
+      description: "구체적인 개선 방법"
+      placeholder: |
+        과속 판정 로직을 determine_display_color() 함수로 분리
+        설정속도 안내 로직을 determine_speed_guide() 함수로 분리
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: "예상 효과"
+      placeholder: |
+        CCN: 15 → 7
+        NLOC: 61 → 30
+    validations:
+      required: false

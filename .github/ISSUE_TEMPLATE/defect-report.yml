@@ -1,0 +1,122 @@
+name: "결함 보고 (Defect Report)"
+description: "정적 분석, 코드 리뷰, 또는 테스트 실행 중 발견된 결함을 등록합니다."
+title: "[결함] "
+labels: ["bug"]
+body:
+  - type: input
+    id: srs
+    attributes:
+      label: "관련 요구사항"
+      description: "위반된 SRS ID (해당하는 경우)"
+      placeholder: "SLAS-SRS-008"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: detection
+    attributes:
+      label: "발견 수단"
+      options:
+        - "CodeQL (자동)"
+        - "cppcheck (자동)"
+        - "cppcheck MISRA (자동)"
+        - "lizard 메트릭 (자동)"
+        - "코드 리뷰 (수동)"
+        - "단위 테스트"
+        - "소프트웨어 테스트 (기능 테스트)"
+        - "기타"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: "심각도"
+      options:
+        - "Critical — 안전 기능 오동작, 데이터 손실"
+        - "Major — 주요 기능 오류, 요구사항 불일치"
+        - "Minor — 경미한 오류, 표시 오류"
+        - "Info — 코딩 표준 위반, 개선 권고"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "결함 유형"
+      options:
+        - "요구사항 불일치 (로직 오류)"
+        - "경계값 오류"
+        - "NULL 포인터 / 메모리"
+        - "미초기화 변수"
+        - "MISRA C 위반"
+        - "코드 메트릭 초과"
+        - "코드 중복"
+        - "기타"
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: "결함 요약"
+      description: "무엇이 잘못되었는지 한 문장으로 요약"
+      placeholder: "90% 경계값 판정에서 >= 대신 >를 사용하여 경계 지점에서 오판정 발생"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "재현 절차 / 입력값"
+      description: "결함을 재현하기 위한 입력값 또는 절차"
+      placeholder: |
+        입력: CamSpd=100, Offset=0, VehSpd=90
+        또는
+        cppcheck --enable=all src/slas.c 실행 시 출력 메시지
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "기대 결과"
+      placeholder: "assistDisplayColor = AMBER (SRS-008: 90% 이상이면 AMBER)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: "실제 결과"
+      placeholder: "assistDisplayColor = GREEN (90 > 90 = false)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: root_cause
+    attributes:
+      label: "원인 분석 (선택)"
+      description: "원인을 파악한 경우 기술합니다."
+      placeholder: "부등호 > 를 >= 로 변경 필요"
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: "스크린샷"
+      description: "결함 발생 화면을 캡처하여 붙여넣으세요 (필수). 동적 테스트: 검증 UI 결과 화면, 정적 분석: 도구 출력 화면"
+      placeholder: "이미지를 드래그하여 여기에 붙여넣으세요"
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: "추가 증거 자료"
+      description: "도구 출력 로그, 추가 스크린샷 등 (선택)"
+      placeholder: "cppcheck 출력 로그, 테스트 로그 등을 붙여넣으세요"
+    validations:
+      required: false
